@@ -1,0 +1,12 @@
+{
+  "strictMode": {
+    "objects": true
+  },
+  "variants": [
+    {
+      "name": "CreateInput",
+      "suffix": "CreateInput",
+      "partial": false
+    }
+  ]
+}
