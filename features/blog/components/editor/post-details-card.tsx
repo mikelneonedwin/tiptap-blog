@@ -14,7 +14,7 @@ import { makeSlug } from "@/lib/utils";
 import React from "react";
 import { useFormContext } from "react-hook-form";
 import type z from "zod";
-import { newBlogSchema } from "../schema";
+import { newBlogSchema } from "../../schema";
 
 /* ---------------- Post Details ---------------- */
 function PostDetailsCardComponent() {

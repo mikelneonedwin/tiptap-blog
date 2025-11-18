@@ -2,7 +2,7 @@
 
 // TODO error handling
 
-import { authorizeSession } from "@/features/auth";
+import { authorizeSession } from "@/features/auth/actions";
 import { prisma } from "@/lib/prisma";
 import { newBlogSchema } from "@/features/blog/schema";
 import { revalidatePath } from "next/cache";
@@ -19,6 +19,8 @@ export async function listUsersBlogPosts() {
       title: true,
       id: true,
       status: true,
+      category: true,
+      description: true,
     },
     orderBy: {
       updatedAt: "desc",
@@ -42,7 +44,7 @@ export async function deleteBlogPost({ id }: { id: string }) {
 }
 
 export async function publishBlog(formData: FormData) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   const { id: _, ...data } = zfd.formData(newBlogSchema).parse(formData);
   const session = await authorizeSession();
   const authorId = session.user.id;

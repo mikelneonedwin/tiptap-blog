@@ -21,7 +21,7 @@ import {
   DetailsSummary,
 } from "@tiptap/extension-details";
 import { Placeholder } from "@tiptap/extensions";
-import { LinkButton } from "./components/link-button";
+import { LinkButton } from "./components/editor/link-button";
 
 export const editorExtensions = [
   StarterKit,

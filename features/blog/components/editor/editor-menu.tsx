@@ -426,8 +426,8 @@ export function EditorMenu({ editor }: { editor: Editor }) {
           type="button"
           size="icon"
           variant="ghost"
-          onClick={() => editor.chain().focus().insertAnchorButton().run()}
-          title="Insert Anchor Button"
+          onClick={() => editor.chain().focus().insertLinkButton().run()}
+          title="Insert Link Button"
         >
           <Zap className="size-5" />
         </Button>

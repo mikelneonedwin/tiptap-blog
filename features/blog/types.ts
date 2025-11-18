@@ -9,4 +9,4 @@ export interface BlogPostWithAuthor extends AppBlogPost {
   author: Pick<User, "name" | "image" | "slug">;
 }
 
-export type PostListType = Awaited<ReturnType<typeof listUsersBlogPosts>>;
+export type ListedPost = Awaited<ReturnType<typeof listUsersBlogPosts>>[number];

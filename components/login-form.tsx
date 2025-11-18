@@ -1,6 +1,5 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -17,83 +16,29 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import z from "zod";
-import { Controller, useForm } from "react-hook-form";
+import {
+  useEmailLoginMutation,
+  useGitHubMutation,
+} from "@/features/auth/mutations";
+import { loginFormSchema, type LoginFormSchema } from "@/features/auth/schemas";
+import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
-import { authClient } from "@/lib/auth-client";
-import { toast } from "sonner";
 import Link from "next/link";
-
-const formSchema = z.object({
-  email: z.email(),
-  password: z.string().min(8, {
-    error: "Must be at least 8 characters long.",
-  }),
-});
-type FormSchema = z.infer<typeof formSchema>;
-
-const toastId = "LOGIN-TOAST";
+import { Controller, useForm } from "react-hook-form";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const form = useForm<FormSchema>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<LoginFormSchema>({
+    resolver: zodResolver(loginFormSchema),
     defaultValues: {
       email: "",
       password: "",
     },
   });
-  const emailMutation = useMutation({
-    mutationFn: async (data: FormSchema) => {
-      await authClient.signIn.email({
-        ...data,
-        callbackURL: "/dashboard",
-      });
-    },
-    onMutate: () => {
-      toast.loading("Logging in", {
-        id: toastId,
-      });
-    },
-    onSuccess: () => {
-      toast.success("Welcome back!", {
-        id: toastId,
-      });
-    },
-    onError: (error) => {
-      console.error("Error logging in via email:", error);
-      toast.error("Sorry, an error occured", {
-        id: toastId,
-      });
-    },
-  });
-  const githubMutation = useMutation({
-    mutationFn: async () => {
-      await authClient.signIn.social({
-        provider: "github",
-        callbackURL: "/dashboard",
-      });
-    },
-    onMutate: () => {
-      toast.loading("Logging in with GitHub", {
-        id: toastId,
-      });
-    },
-    onSuccess: () => {
-      toast.success("Welcome!", {
-        id: toastId,
-      });
-    },
-    onError: (error) => {
-      console.error("Error logging in via github:", error);
-      toast.error("Sorry, an error occured", {
-        id: toastId,
-      });
-    },
-  });
+  const emailMutation = useEmailLoginMutation();
+  const githubMutation = useGitHubMutation();
   const isPending = githubMutation.isPending || emailMutation.isPending;
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>

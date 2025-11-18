@@ -1,8 +1,8 @@
 "use client";
 
-import { BlogOgPreview } from "@/features/blog/components/blog-og-preview"; // ✅ import
-import { ContentEditorCard } from "@/features/blog/components/content-editor-card";
-import { PostDetailsCard } from "@/features/blog/components/post-details-card";
+import { BlogOgPreview } from "@/features/blog/components/editor/blog-og-preview"; // ✅ import
+import { ContentEditorCard } from "@/features/blog/components/editor/content-editor-card";
+import { PostDetailsCard } from "@/features/blog/components/editor/post-details-card";
 import { Form } from "@/components/ui/form";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { newBlogSchema, type BlogForm } from "@/features/blog/schema";
@@ -17,9 +17,12 @@ import { useForm, useFormContext, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import type z from "zod";
 import { zfd } from "zod-form-data";
-import { publishBlog as publishFn, updateBlog as updateFn } from "../actions";
-import { usersBlogPostOptions } from "../query-options";
-import type { BlogPostWithAuthor } from "../types";
+import {
+  publishBlog as publishFn,
+  updateBlog as updateFn,
+} from "../../actions";
+import { usersBlogPostOptions } from "../../query-options";
+import type { BlogPostWithAuthor } from "../../types";
 import BlogView from "./blog-view";
 import { EditorPane } from "./editor-pane";
 

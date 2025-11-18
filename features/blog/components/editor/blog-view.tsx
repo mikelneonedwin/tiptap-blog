@@ -2,7 +2,7 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import type { BlogPostWithAuthor } from "../types";
+import type { BlogPostWithAuthor } from "../../types";
 import { Share2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";

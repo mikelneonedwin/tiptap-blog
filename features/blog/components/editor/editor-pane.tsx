@@ -24,9 +24,9 @@ import { useRouter } from "nextjs-toploader/app";
 import { memo, useRef, useState } from "react";
 import { toast } from "sonner";
 import type z from "zod";
-import { deleteBlogPost as deleteFn } from "../actions";
-import { usersBlogPostOptions } from "../query-options";
-import type { newBlogSchema } from "../schema";
+import { deleteBlogPost as deleteFn } from "../../actions";
+import { usersBlogPostOptions } from "../../query-options";
+import type { newBlogSchema } from "../../schema";
 import { useFormContext, useWatch } from "react-hook-form";
 import { BlogCategoryEnumArray } from "@/generated/enums";
 

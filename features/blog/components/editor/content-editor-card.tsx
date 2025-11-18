@@ -1,7 +1,7 @@
 "use client";
 
 import { editorExtensions as tipTapExtensions } from "@/features/blog/editor-extensions";
-import type { newBlogSchema } from "../schema";
+import type { newBlogSchema } from "../../schema";
 import { EditorContent, useEditor } from "@tiptap/react";
 import { memo } from "react";
 import { useFormContext } from "react-hook-form";
@@ -14,7 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Separator } from "@/components/ui/separator";
-import { EditorMenu } from "@/features/blog/components/editor-menu";
+import { EditorMenu } from "@/features/blog/components/editor/editor-menu";
 
 /* ---------------- Content Editor ---------------- */
 function ContentEditorCardComponent() {

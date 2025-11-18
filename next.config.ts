@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   /* config options here */
   experimental: {
     typedEnv: true,
+    authInterrupts: true,
   },
 };
 

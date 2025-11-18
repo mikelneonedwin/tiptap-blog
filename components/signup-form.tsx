@@ -16,34 +16,21 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { authClient } from "@/lib/auth-client";
+import {
+  useEmailSignupMutation,
+  useGitHubMutation,
+} from "@/features/auth/mutations";
+import {
+  signupFormSchema,
+  type SignupFormSchema,
+} from "@/features/auth/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
 import Link from "next/link";
 import { Controller, useForm } from "react-hook-form";
-import { toast } from "sonner";
-import z from "zod";
-
-const formSchema = z
-  .object({
-    email: z.email(),
-    password: z.string().min(8, {
-      error: "Must be at least 8 characters long.",
-    }),
-    confirmPassword: z.string().min(8),
-    name: z.string().min(1),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match.",
-    path: ["confirmPassword"],
-  });
-type FormSchema = z.infer<typeof formSchema>;
-
-const toastId = "SIGNUP-TOAST";
 
 export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
-  const form = useForm<FormSchema>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<SignupFormSchema>({
+    resolver: zodResolver(signupFormSchema),
     defaultValues: {
       email: "",
       password: "",
@@ -51,54 +38,8 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
       name: "",
     },
   });
-  const emailMutation = useMutation({
-    mutationFn: async (data: FormSchema) => {
-      await authClient.signIn.email({
-        ...data,
-        callbackURL: "/dashboard",
-      });
-    },
-    onMutate: () => {
-      toast.loading("Creating account", {
-        id: toastId,
-      });
-    },
-    onSuccess: () => {
-      toast.success("Welcome aboard!", {
-        id: toastId,
-      });
-    },
-    onError: (error) => {
-      console.error("Error creating account in via email:", error);
-      toast.error("Sorry, an error occured", {
-        id: toastId,
-      });
-    },
-  });
-  const githubMutation = useMutation({
-    mutationFn: async () => {
-      await authClient.signIn.social({
-        provider: "github",
-        callbackURL: "/dashboard",
-      });
-    },
-    onMutate: () => {
-      toast.loading("Creating account with GitHub", {
-        id: toastId,
-      });
-    },
-    onSuccess: () => {
-      toast.success("Welcome aboard!", {
-        id: toastId,
-      });
-    },
-    onError: (error) => {
-      console.error("Error creating account in via github:", error);
-      toast.error("Sorry, an error occured", {
-        id: toastId,
-      });
-    },
-  });
+  const emailMutation = useEmailSignupMutation();
+  const githubMutation = useGitHubMutation();
   const isPending = githubMutation.isPending || emailMutation.isPending;
   return (
     <Card {...props}>
