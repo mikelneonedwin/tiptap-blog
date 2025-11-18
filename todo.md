@@ -10,8 +10,10 @@ Setup needed:
 - Tiptap
 
 - README.md with requirements
-- Login page
-- Tanstack query options
-- Server actions
-- published boolean - status: "draft","publish","featured"
-- Move features/blog/schema.prisma into prisma/schema.prisma and update README
+- SEO
+- Home page with listed blog posts
+- Dashboard for regular views
+- Profile settings page
+- Dashboard for editing blog posts
+- Progress bar on blog posts to show you progress through the blog
+- X AI news navbar displaying different categories on blog

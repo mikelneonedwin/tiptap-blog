@@ -15,7 +15,7 @@ generator zod {
   config   = "./zod-generator.config.json"
 }
 
-generator docs {
+generator enums {
   provider = "tsx ./prisma/generators/enum-array.ts"
 }
 
