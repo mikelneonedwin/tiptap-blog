@@ -1,1 +1,1 @@
-export { BlogEditor as default } from "@/features/blog/components/editor/blog-editor";
+export { default as default } from "@/features/blog/pages/editor.new";

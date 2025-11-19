@@ -1,12 +1,9 @@
 import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
+    SidebarInset,
+    SidebarProvider
 } from "@/components/ui/sidebar";
-import BlogSidebar from "./blog-sidebar";
-import { Separator } from "@/components/ui/separator";
 import type { ReactNode } from "react";
-import { ModeToggle } from "@/components/mode-toggle";
+import BlogSidebar from "./blog-sidebar";
 
 const BlogDashboardLayout = ({ children }: { children: ReactNode }) => {
   return (
@@ -20,14 +17,6 @@ const BlogDashboardLayout = ({ children }: { children: ReactNode }) => {
     >
       <BlogSidebar />
       <SidebarInset>
-        <header className="bg-background sticky top-0 flex shrink-0 items-center gap-2 border-b p-4">
-          <SidebarTrigger className="-ml-1" />
-          <ModeToggle />
-          <Separator
-            orientation="vertical"
-            className="mr-2 data-[orientation=vertical]:h-4"
-          />
-        </header>
         <div>{children}</div>
       </SidebarInset>
     </SidebarProvider>

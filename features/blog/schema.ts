@@ -1,17 +1,17 @@
 import { BlogCategoryEnumArray } from "@/generated/enums";
-import { BlogCreateInputSchema } from "@/generated/zod/schemas";
+import { BlogCreateInputObjectZodSchema } from "@/generated/zod/schemas";
 import { makeSlug } from "@/lib/utils";
 import z from "zod";
 import { MAX_DESCRIPTION_LENGTH } from "./constants";
 
-const blog = BlogCreateInputSchema.shape;
+const blog = BlogCreateInputObjectZodSchema.shape;
 export const newBlogSchema = z
   .object({
     category: z.enum(BlogCategoryEnumArray, {
       error: "Category is required",
     }),
     content: blog.content.min(1, "Content is required"),
-    id: blog.id.optional(),
+    id: blog.id,
     title: blog.title.min(1, "Title is required"),
     slug: blog.slug,
     description: blog.description.min(1).max(MAX_DESCRIPTION_LENGTH),
@@ -42,7 +42,7 @@ export const newBlogSchema = z
     // ),
   } satisfies Record<
     Exclude<
-      keyof typeof BlogCreateInputSchema.shape,
+      keyof typeof BlogCreateInputObjectZodSchema.shape,
       "author" | "authorId" | "createdAt" | "updatedAt"
     >,
     z.ZodType

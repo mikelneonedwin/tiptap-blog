@@ -12,6 +12,7 @@ import {
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarHeader,
@@ -19,6 +20,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
 import {
@@ -60,6 +62,7 @@ import { useMemo, useState, type ComponentProps } from "react";
 import { usersBlogPostOptions } from "../../query-options";
 import type { ListedPost } from "../../types";
 import { Spinner } from "@/components/ui/spinner";
+import { ModeToggle } from "@/components/mode-toggle";
 
 const categoryIconMap: Record<BlogCategory | BlogStatus, LucideIcon> = {
   Company: Building2,
@@ -336,6 +339,35 @@ const BlogSidebar = (props: ComponentProps<typeof Sidebar>) => {
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>
+        <SidebarFooter>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                tooltip={{
+                  children: "Toggle Theme",
+                  hidden: false,
+                }}
+                className="px-2.5 md:px-2"
+              >
+                <ModeToggle />
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                disabled={!whatToShow.length}
+                tooltip={{
+                  children: "Toggle Sidebar",
+                  hidden: false,
+                }}
+                className="px-2.5 md:px-2"
+              >
+                <SidebarTrigger disabled={!whatToShow.length} />
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarFooter>
         {/* TODO USER INFO */}
       </Sidebar>
       {whatToShow.length > 0 && (
