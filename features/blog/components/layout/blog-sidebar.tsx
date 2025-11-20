@@ -1,5 +1,6 @@
 "use client";
 
+import { ModeToggle } from "@/components/mode-toggle";
 import { Button } from "@/components/ui/button";
 import {
   Empty,
@@ -23,6 +24,7 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Tooltip,
   TooltipContent,
@@ -61,8 +63,6 @@ import { useRouter } from "nextjs-toploader/app";
 import { useMemo, useState, type ComponentProps } from "react";
 import { usersBlogPostOptions } from "../../query-options";
 import type { ListedPost } from "../../types";
-import { Spinner } from "@/components/ui/spinner";
-import { ModeToggle } from "@/components/mode-toggle";
 
 const categoryIconMap: Record<BlogCategory | BlogStatus, LucideIcon> = {
   Company: Building2,
@@ -289,6 +289,7 @@ const BlogSidebar = (props: ComponentProps<typeof Sidebar>) => {
                       hidden: false,
                     }}
                     onClick={() => {
+                      if (pathname === "/dashboard/blog/new") return;
                       setOpen(false);
                       router.replace("/dashboard/blog/new");
                     }}

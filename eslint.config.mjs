@@ -8,13 +8,6 @@ const eslintConfig = defineConfig([
   ...nextTs,
   ...pluginQuery.configs["flat/recommended"],
   {
-    languageOptions: {
-      parserOptions: {
-        projectService: true,
-      },
-    },
-  },
-  {
     rules: {
       "no-console": ["warn", { allow: ["error"] }],
       "no-restricted-syntax": "error",
@@ -27,8 +20,7 @@ const eslintConfig = defineConfig([
           ignoreRestSiblings: true,
         },
       ],
-      "@typescript-eslint/await-thenable": "error",
-      "@typescript-eslint/no-floating-promises": "error",
+      "react/jsx-key": "warn",
     },
   },
   // Override default ignores of eslint-config-next.

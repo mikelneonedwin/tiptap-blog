@@ -8,12 +8,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { APP_URL } from "@/lib/config";
-import type { BlogForm } from "@/features/blog/schema";
+import type { BlogFormOutput } from "@/features/blog/schemas";
 import { memo, useMemo } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 
 export const BlogOgPreview = memo(function BlogOgPreview() {
-  const form = useFormContext<BlogForm>();
+  const form = useFormContext<BlogFormOutput>();
 
   const slug = useWatch({ control: form.control, name: "slug" });
   const title = useWatch({ control: form.control, name: "title" });

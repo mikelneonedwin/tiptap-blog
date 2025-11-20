@@ -120,3 +120,117 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  /* Basic editor styles */
+  .tiptap {
+    :first-child {
+      margin-top: 0;
+    }
+
+    h1 {
+      @apply scroll-m-20 text-4xl font-extrabold tracking-tight text-balance;
+    }
+
+    h2 {
+      /* @apply border-b */
+      @apply scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0 mt-6;
+    }
+
+    h3 {
+      @apply scroll-m-20 text-2xl font-semibold tracking-tight first:mt-0 mt-4;
+    }
+
+    h4 {
+      @apply scroll-m-20 text-xl font-semibold tracking-tight first:mt-0 mt-2;
+    }
+
+    p {
+      @apply leading-7 [&:not(:first-child):not(p+p)]:mt-6;
+    }
+
+    blockquote {
+      @apply mt-6 border-l-2 pl-6 italic;
+    }
+
+    table {
+      @apply w-full border-collapse;
+    }
+
+    thead tr {
+      @apply border-t even:bg-muted m-0 p-0;
+    }
+
+    th {
+      @apply border px-4 py-2 text-left font-bold;
+    }
+
+    tbody tr {
+      @apply border-t even:bg-muted m-0 p-0;
+    }
+
+    td {
+      @apply border px-4 py-2 text-left;
+    }
+
+    /* Utility for alignment variants (mimics the [&[align=center]] and [&[align=right]] logic) */
+    th[align="center"],
+    td[align="center"] {
+      @apply text-center;
+    }
+
+    th[align="right"],
+    td[align="right"] {
+      @apply text-right;
+    }
+
+    ul {
+      @apply list-disc;
+    }
+
+    ol {
+      @apply list-decimal;
+    }
+
+    ul,
+    ol {
+      @apply my-6 ml-6 [&>li]:mt-2;
+    }
+
+    code {
+      @apply bg-muted relative rounded px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold;
+    }
+
+    /*p:first-of-type {
+      @apply text-muted-foreground text-xl;
+    }*/
+
+    small {
+      @apply text-sm leading-none font-medium;
+    }
+
+    pre {
+      background: var(--black);
+      border-radius: 0.5rem;
+      color: var(--white);
+      font-family: "JetBrainsMono", monospace;
+      margin: 1.5rem 0;
+      padding: 0.75rem 1rem;
+    }
+
+    hr {
+      @apply bg-border shrink-0 h-px w-full mt-4;
+      /*@apply hidden;*/
+    }
+
+    a.btn {
+      @apply inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 mx-0.5;
+    }
+
+    p:empty {
+      display: block;
+      margin: 0;
+      height: 1em; /* adjust for how much line spacing you want */
+    }
+  }
+}

@@ -23,7 +23,7 @@ import {
 import { Placeholder } from "@tiptap/extensions";
 import { LinkButton } from "./components/editor/link-button";
 
-export const editorExtensions = [
+export const blogEditorExtensions = [
   StarterKit,
   Placeholder.configure({
     placeholder: "Let's get started...",

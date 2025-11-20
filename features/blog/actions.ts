@@ -4,7 +4,7 @@
 
 import { authorizeSession } from "@/features/auth/actions";
 import { prisma } from "@/lib/prisma";
-import { newBlogSchema } from "@/features/blog/schema";
+import { newBlogSchema } from "@/features/blog/schemas";
 import { revalidatePath } from "next/cache";
 import z from "zod";
 import { zfd } from "zod-form-data";
@@ -44,7 +44,6 @@ export async function deleteBlogPost({ id }: { id: string }) {
 }
 
 export async function publishBlog(formData: FormData) {
-   
   const { id: _, ...data } = zfd.formData(newBlogSchema).parse(formData);
   const session = await authorizeSession();
   const authorId = session.user.id;

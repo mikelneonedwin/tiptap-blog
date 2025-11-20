@@ -1,7 +1,7 @@
 "use client";
 
-import { editorExtensions as tipTapExtensions } from "@/features/blog/editor-extensions";
-import type { newBlogSchema } from "../../schema";
+import { blogEditorExtensions as tipTapExtensions } from "@/features/blog/editor-extensions";
+import type { newBlogSchema } from "../../schemas";
 import { EditorContent, useEditor } from "@tiptap/react";
 import { memo } from "react";
 import { useFormContext } from "react-hook-form";
@@ -14,7 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Separator } from "@/components/ui/separator";
-import { EditorMenu } from "@/features/blog/components/editor/editor-menu";
+import { OldEditorMenu } from "@/features/blog/components/editor/old-editor-menu";
 
 /* ---------------- Content Editor ---------------- */
 function ContentEditorCardComponent() {
@@ -41,7 +41,7 @@ function ContentEditorCardComponent() {
             <FormItem>
               <FormControl>
                 <div className="border rounded p-2">
-                  {editor && <EditorMenu editor={editor} />}
+                  {editor && <OldEditorMenu editor={editor} />}
                   <Separator />
                   <EditorContent
                     editor={editor}

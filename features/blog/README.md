@@ -33,3 +33,7 @@ Examples for text blocks:
 - **Caption**
 - **Body Large / Small**
 - **Bold / Italic / Underline themes**
+
+Add shadcn setup instructions
+
+Delete/Reset button for drafted posts

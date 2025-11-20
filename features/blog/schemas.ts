@@ -16,17 +16,15 @@ export const newBlogSchema = z
     slug: blog.slug,
     description: blog.description.min(1).max(MAX_DESCRIPTION_LENGTH),
     tags: z
-      .string()
+      .object({
+        value: z.string(),
+      })
       .array()
-      .optional()
-      .or(
-        z
-          .string()
-          .transform((str) => [str])
-          .optional(),
-      ),
+      .optional(),
     status: blog.status,
-    coverImage: z.url(),
+    coverImage: z.url({
+      error: "The blog post needs a cover image",
+    }),
     //   .or(
     //   z
     //     .instanceof(File)
@@ -52,4 +50,5 @@ export const newBlogSchema = z
     slug: blog.slug || makeSlug(blog.title),
   }));
 
-export type BlogForm = z.infer<typeof newBlogSchema>;
+export type BlogFormOutput = z.output<typeof newBlogSchema>;
+export type BlogFormInput = z.input<typeof newBlogSchema>;

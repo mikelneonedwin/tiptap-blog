@@ -18,17 +18,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { BlogCategoryEnumArray } from "@/generated/enums";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader, Plus, Save, Send, Trash, X } from "lucide-react";
 import { useRouter } from "nextjs-toploader/app";
 import { memo, useRef, useState } from "react";
+import { useFormContext, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import type z from "zod";
 import { deleteBlogPost as deleteFn } from "../../actions";
 import { usersBlogPostOptions } from "../../query-options";
-import type { newBlogSchema } from "../../schema";
-import { useFormContext, useWatch } from "react-hook-form";
-import { BlogCategoryEnumArray } from "@/generated/enums";
+import type { newBlogSchema } from "../../schemas";
 
 function EditorPaneComponent() {
   const form = useFormContext<z.infer<typeof newBlogSchema>>();

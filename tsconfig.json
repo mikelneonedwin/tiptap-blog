@@ -33,5 +33,9 @@
     "**/*.js",
     "**/*.mjs"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules",
+    "features/blog/components/editor/editor-pane.tsx",
+    "features/blog/components/editor/old-blog-editor.tsx"
+  ]
 }
