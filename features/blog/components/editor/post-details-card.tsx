@@ -14,11 +14,11 @@ import { makeSlug } from "@/lib/utils";
 import React from "react";
 import { useFormContext } from "react-hook-form";
 import type z from "zod";
-import { newBlogSchema } from "../../schemas";
+import { blogFormSchema } from "../../schemas";
 
 /* ---------------- Post Details ---------------- */
 function PostDetailsCardComponent() {
-  const form = useFormContext<z.infer<typeof newBlogSchema>>();
+  const form = useFormContext<z.infer<typeof blogFormSchema>>();
   return (
     <Card className="bg-[linear-gradient(270deg,rgba(0,11,20,0.2)_0%,rgba(1,73,132,0)_100%)]! bg-transparent border-none">
       <CardHeader>

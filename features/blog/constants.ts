@@ -8,3 +8,4 @@ export const TEXT_COLOR_PRESETS = [
   { label: "Purple", hex: "#7C3AED" },
   { label: "Orange", hex: "#D97706" },
 ];
+export const DELETE_BLOG_POST_MUTATION_KEY = ["DELETE-BLOG-POST"];

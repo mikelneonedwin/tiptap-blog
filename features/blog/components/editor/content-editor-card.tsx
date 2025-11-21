@@ -1,7 +1,7 @@
 "use client";
 
 import { blogEditorExtensions as tipTapExtensions } from "@/features/blog/editor-extensions";
-import type { newBlogSchema } from "../../schemas";
+import type { blogFormSchema } from "../../schemas";
 import { EditorContent, useEditor } from "@tiptap/react";
 import { memo } from "react";
 import { useFormContext } from "react-hook-form";
@@ -18,7 +18,7 @@ import { OldEditorMenu } from "@/features/blog/components/editor/old-editor-menu
 
 /* ---------------- Content Editor ---------------- */
 function ContentEditorCardComponent() {
-  const form = useFormContext<z.infer<typeof newBlogSchema>>();
+  const form = useFormContext<z.infer<typeof blogFormSchema>>();
 
   const editor = useEditor({
     extensions: tipTapExtensions,

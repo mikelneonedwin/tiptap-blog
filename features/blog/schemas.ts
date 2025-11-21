@@ -4,14 +4,45 @@ import { makeSlug } from "@/lib/utils";
 import z from "zod";
 import { MAX_DESCRIPTION_LENGTH } from "./constants";
 
+const blogPostIdError = "Invalid blog post id";
+export const blogPostIdSchema = z
+  .uuid({
+    error: blogPostIdError,
+  })
+  .or(
+    z.uuidv4({
+      error: blogPostIdError,
+    }),
+  )
+  .or(
+    z.uuidv6({
+      error: blogPostIdError,
+    }),
+  )
+  .or(
+    z.uuidv7({
+      error: blogPostIdError,
+    }),
+  )
+  .or(
+    z.cuid({
+      error: blogPostIdError,
+    }),
+  )
+  .or(
+    z.cuid2({
+      error: blogPostIdError,
+    }),
+  );
+
 const blog = BlogCreateInputObjectZodSchema.shape;
-export const newBlogSchema = z
+export const blogFormSchema = z
   .object({
     category: z.enum(BlogCategoryEnumArray, {
       error: "Category is required",
     }),
     content: blog.content.min(1, "Content is required"),
-    id: blog.id,
+    id: blogPostIdSchema.optional(),
     title: blog.title.min(1, "Title is required"),
     slug: blog.slug,
     description: blog.description.min(1).max(MAX_DESCRIPTION_LENGTH),
@@ -20,6 +51,7 @@ export const newBlogSchema = z
         value: z.string(),
       })
       .array()
+      .transform((tags) => tags.map((tag) => tag.value))
       .optional(),
     status: blog.status,
     coverImage: z.url({
@@ -50,5 +82,11 @@ export const newBlogSchema = z
     slug: blog.slug || makeSlug(blog.title),
   }));
 
-export type BlogFormOutput = z.output<typeof newBlogSchema>;
-export type BlogFormInput = z.input<typeof newBlogSchema>;
+export type BlogFormOutput = z.output<typeof blogFormSchema>;
+export type BlogFormInput = z.input<typeof blogFormSchema>;
+
+export const updateBlogSchema = blogFormSchema.in.extend({
+  id: blogFormSchema.in.shape.id.unwrap(), // require post id
+});
+export type UpdateBlogInput = z.input<typeof updateBlogSchema>;
+export type UpdateBlogOutput = z.output<typeof updateBlogSchema>;

@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/empty";
 import { Spinner } from "@/components/ui/spinner";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutationState } from "@tanstack/react-query";
 import type { Editor } from "@tiptap/core";
 import {
   useEditor as useEditorHook,
@@ -29,12 +30,19 @@ import {
   useWatch,
   type UseFormReturn,
 } from "react-hook-form";
+import { DELETE_BLOG_POST_MUTATION_KEY } from "../constants";
 import { blogEditorExtensions } from "../editor-extensions";
 import {
-  newBlogSchema,
+  useCreateBlogPostMutation,
+  useUpdateBlogPostMutation,
+} from "../mutations";
+import {
+  blogFormSchema,
   type BlogFormInput,
   type BlogFormOutput,
 } from "../schemas";
+import { usePostToUpdate } from "./post-to-edit-provider";
+import { toast } from "sonner";
 
 type Tab = "edit" | "preview";
 
@@ -97,16 +105,17 @@ export function useBlogForm() {
 }
 
 const EditorProvider = ({ children }: { children: ReactNode }) => {
+  const postToUpdate = usePostToUpdate();
   const form = useForm<
     BlogFormInput,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     any,
     BlogFormOutput
   >({
-    resolver: zodResolver(newBlogSchema),
-    defaultValues: {
+    resolver: zodResolver(blogFormSchema),
+    defaultValues: postToUpdate ?? {
       category: "Company",
-      content: "Write your post here...",
+      content: "Let's get started...",
       coverImage: "",
       description: "",
       slug: "",
@@ -127,30 +136,69 @@ const EditorProvider = ({ children }: { children: ReactNode }) => {
     onUpdate: ({ editor }) => form.setValue("content", editor.getHTML()),
   });
 
+  const createMutation = useCreateBlogPostMutation();
+  const updateMutation = useUpdateBlogPostMutation();
+
+  const isDeletingPost = useMutationState({
+    // this mutation key needs to match the mutation key of the given mutation (see above)
+    filters: { mutationKey: DELETE_BLOG_POST_MUTATION_KEY },
+    select: (mutation) => mutation.state.status === "pending",
+  });
+
+  function onSubmit(values: BlogFormOutput) {
+    if (postToUpdate) {
+      updateMutation.mutate({
+        ...values,
+        id: postToUpdate.id,
+      });
+    } else {
+      createMutation.mutate(values);
+    }
+  }
+
+  const isPending = useMemo(() => {
+    const booleans = [
+      createMutation.isPending,
+      updateMutation.isPending,
+      ...isDeletingPost,
+    ];
+    return booleans.some((boolean) => boolean);
+  }, [createMutation.isPending, isDeletingPost, updateMutation.isPending]);
+
   const [activeTab, setActiveTab] = useState<Tab>("edit");
 
   if (!editor)
     return (
-      <Empty className="min-h-[200px] flex flex-col justify-center items-center">
-        <EmptyHeader>
-          <EmptyMedia variant="icon">
-            <Spinner />
-          </EmptyMedia>
-          <EmptyTitle>Loading Editor...</EmptyTitle>
-          <EmptyDescription>
-            Please wait while we initialize your editor.
-          </EmptyDescription>
-        </EmptyHeader>
-      </Empty>
+      <div className="flex items-center h-svh justify-center">
+        <Empty className="min-h-[200px] flex flex-col justify-center items-center">
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <Spinner />
+            </EmptyMedia>
+            <EmptyTitle>Loading Editor...</EmptyTitle>
+            <EmptyDescription>
+              Please wait while we initialize your editor.
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      </div>
     );
 
   return (
     <FormProvider {...form}>
       <EditorContext.Provider value={{ editor, activeTab, setActiveTab, form }}>
         {/* TODO ON SUBMIT */}
-        <form>
+        <form
+          onSubmit={form.handleSubmit(
+            (values) => onSubmit(values),
+            () =>
+              toast.error("Oops, something's wrong", {
+                description: "Please ensure you've filled the necessary fields",
+              }),
+          )}
+        >
           {/* TODO GLOBAL FORM DISABLING */}
-          <fieldset>{children}</fieldset>
+          <fieldset disabled={isPending}>{children}</fieldset>
         </form>
       </EditorContext.Provider>
     </FormProvider>

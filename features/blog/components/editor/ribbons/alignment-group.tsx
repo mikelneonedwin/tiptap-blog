@@ -22,31 +22,37 @@ const alignments = [
 type Alignment = (typeof alignments)[number]["label"];
 
 function AlignmentGroup() {
-  const { textAlign, setTextAlign } = useEditorState((ctx) => ({
-    textAlign:
-      (ctx.editor.getAttributes("paragraph").textAlign as Alignment) || "left",
+  const { isActive, canAlign, setTextAlign } = useEditorState((ctx) => ({
+    isActive: (align: Alignment) => ctx.editor.isActive({ textAlign: align }),
+    canAlign: (align: Alignment) => ctx.editor.can().setTextAlign(align),
     setTextAlign: (align: Alignment) =>
       ctx.editor.chain().focus().setTextAlign(align).run(),
   }));
-  return alignments.map(({ label, icon: Icon }) => (
-    <Tooltip key={label}>
-      <TooltipTrigger asChild>
-        <Button
-          type="button"
-          size="icon"
-          variant={textAlign === label ? "default" : "ghost"}
-          onClick={() => setTextAlign(label)}
-        >
-          <Icon />
-        </Button>
-      </TooltipTrigger>
-      <TooltipContent>
-        <p className="capitalize">
-          {label !== "justify" && "Align"} {label}
-        </p>
-      </TooltipContent>
-    </Tooltip>
-  ));
+  return alignments.map(({ label, icon: Icon }) => {
+    const active = isActive(label);
+    const canDo = canAlign(label);
+    return (
+      <Tooltip key={label}>
+        <TooltipTrigger asChild>
+          <Button
+            type="button"
+            size="icon"
+            variant={active ? "default" : "ghost"}
+            disabled={!canDo}
+            onClick={() => setTextAlign(label)}
+          >
+            <Icon />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p className="capitalize">
+            {label !== "justify" && "Align "}
+            {label}
+          </p>
+        </TooltipContent>
+      </Tooltip>
+    );
+  });
 }
 
 export default AlignmentGroup;

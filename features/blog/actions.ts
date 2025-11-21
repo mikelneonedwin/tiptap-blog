@@ -3,10 +3,14 @@
 // TODO error handling
 
 import { authorizeSession } from "@/features/auth/actions";
+import {
+  blogFormSchema,
+  blogPostIdSchema,
+  updateBlogSchema,
+  type BlogFormInput,
+} from "@/features/blog/schemas";
 import { prisma } from "@/lib/prisma";
-import { newBlogSchema } from "@/features/blog/schemas";
 import { revalidatePath } from "next/cache";
-import z from "zod";
 import { zfd } from "zod-form-data";
 
 export async function listUsersBlogPosts() {
@@ -29,10 +33,8 @@ export async function listUsersBlogPosts() {
   return results;
 }
 
-export async function deleteBlogPost({ id }: { id: string }) {
-  z.string({
-    error: "Invalid blog post id",
-  }).parse(id);
+export async function deleteBlogPost(id: string) {
+  blogPostIdSchema.parse(id);
   const session = await authorizeSession();
   await prisma.blog.delete({
     where: {
@@ -43,8 +45,8 @@ export async function deleteBlogPost({ id }: { id: string }) {
   });
 }
 
-export async function publishBlog(formData: FormData) {
-  const { id: _, ...data } = zfd.formData(newBlogSchema).parse(formData);
+export async function publishBlogPost(formData: FormData) {
+  const { id: _, ...data } = zfd.formData(blogFormSchema).parse(formData);
   const session = await authorizeSession();
   const authorId = session.user.id;
   // const coverImage = await uploadImage(data.coverImage, {
@@ -69,14 +71,8 @@ export async function publishBlog(formData: FormData) {
   return { id };
 }
 
-const updateBlogSchema = zfd.formData(
-  newBlogSchema.in.extend({
-    id: newBlogSchema.in.shape.id.unwrap(), // require post id
-  }),
-);
-
-export async function updateBlog(formData: FormData) {
-  const { id, ...update } = updateBlogSchema.parse(formData);
+export async function updateBlogPost(formData: FormData) {
+  const { id, ...update } = zfd.formData(updateBlogSchema).parse(formData);
 
   const session = await authorizeSession();
   const authorId = session.user.id;
@@ -101,4 +97,32 @@ export async function updateBlog(formData: FormData) {
   revalidatePath("/blog");
   revalidatePath(`/blog/${slug}`);
   revalidatePath("/sitemap.xml");
+}
+
+export async function getBlogPostForEdits(postId: string) {
+  blogPostIdSchema.parse(postId);
+  const post = await prisma.blog.findUniqueOrThrow({
+    where: {
+      id: postId,
+    },
+    select: {
+      category: true,
+      content: true,
+      coverImage: true,
+      description: true,
+      id: true,
+      slug: true,
+      status: true,
+      tags: true,
+      title: true,
+    },
+  });
+  const tags = post.tags as string[] | null;
+  return {
+    ...post,
+    tags:
+      tags?.map((value) => ({
+        value,
+      })) ?? [],
+  } satisfies BlogFormInput;
 }
