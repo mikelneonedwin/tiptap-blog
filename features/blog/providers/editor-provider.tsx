@@ -30,6 +30,7 @@ import {
   useWatch,
   type UseFormReturn,
 } from "react-hook-form";
+import { toast } from "sonner";
 import { DELETE_BLOG_POST_MUTATION_KEY } from "../constants";
 import { blogEditorExtensions } from "../editor-extensions";
 import {
@@ -42,7 +43,6 @@ import {
   type BlogFormOutput,
 } from "../schemas";
 import { usePostToUpdate } from "./post-to-edit-provider";
-import { toast } from "sonner";
 
 type Tab = "edit" | "preview";
 
@@ -128,6 +128,7 @@ const EditorProvider = ({ children }: { children: ReactNode }) => {
     control: form.control,
     name: "content",
   });
+
   const editor = useEditorHook({
     extensions: blogEditorExtensions,
     content: content,

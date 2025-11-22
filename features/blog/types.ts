@@ -6,7 +6,14 @@ export interface AppBlogPost extends Omit<Blog, "tags"> {
 }
 
 export interface BlogPostWithAuthor extends AppBlogPost {
-  author: Pick<User, "name" | "image" | "slug">;
+  author: Pick<User, "name" | "image">;
 }
 
 export type ListedPost = Awaited<ReturnType<typeof listUsersBlogPosts>>[number];
+
+export type CroppedImageArea = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};

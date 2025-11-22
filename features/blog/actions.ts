@@ -2,16 +2,19 @@
 
 // TODO error handling
 
-import { authorizeSession } from "@/features/auth/actions";
+import { authorizeSession } from "@/features/auth/utils";
 import {
   blogFormSchema,
   blogPostIdSchema,
-  updateBlogSchema,
-  type BlogFormInput,
+  updateBlogFormSchema,
+  type UpdateBlogFormInput,
 } from "@/features/blog/schemas";
+import type { Prisma } from "@/generated/prisma";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { unauthorized } from "next/navigation";
 import { zfd } from "zod-form-data";
+import { blobToDataURL, uploadBlogPostCoverImage } from "./server-utils";
 
 export async function listUsersBlogPosts() {
   const session = await authorizeSession();
@@ -46,60 +49,100 @@ export async function deleteBlogPost(id: string) {
 }
 
 export async function publishBlogPost(formData: FormData) {
-  const { id: _, ...data } = zfd.formData(blogFormSchema).parse(formData);
+  const {
+    id: _,
+    coverImage,
+    ...data
+  } = zfd.formData(blogFormSchema.out).parse(formData);
   const session = await authorizeSession();
   const authorId = session.user.id;
-  // const coverImage = await uploadImage(data.coverImage, {
-  //   folder: "blog",
-  // });
-
+  const coverImageDataUrl = await blobToDataURL(coverImage);
   const { id, slug } = await prisma.blog.create({
     data: {
       ...data,
       authorId,
-      // coverImage: coverImage?.url,
+      coverImage: coverImageDataUrl,
     },
     select: {
       id: true,
       slug: true,
     },
   });
-
-  revalidatePath("/blog");
-  revalidatePath(`/blog/${slug}`);
-  revalidatePath("/sitemap.xml");
-  return { id };
-}
-
-export async function updateBlogPost(formData: FormData) {
-  const { id, ...update } = zfd.formData(updateBlogSchema).parse(formData);
-
-  const session = await authorizeSession();
-  const authorId = session.user.id;
-  // const coverImage = await uploadImage(update.coverImage, {
-  //   folder: "blog",
-  //   public_id: id,
-  //   overwrite: true,
-  // });
-
-  const { slug } = await prisma.blog.update({
+  const imageUrl = await uploadBlogPostCoverImage(coverImageDataUrl, id);
+  await prisma.blog.update({
     where: {
       id,
-      authorId,
     },
     data: {
-      ...update,
-      authorId,
-      // coverImage: coverImage?.url,
+      coverImage: imageUrl,
     },
   });
 
   revalidatePath("/blog");
   revalidatePath(`/blog/${slug}`);
   revalidatePath("/sitemap.xml");
+  return { id, imageUrl };
 }
 
-export async function getBlogPostForEdits(postId: string) {
+export async function updateBlogPost(formData: FormData) {
+  const { id, coverImage, ...update } = zfd
+    .formData(
+      updateBlogFormSchema.partial().required({
+        id: true,
+      }),
+    )
+    .parse(formData);
+
+  const session = await authorizeSession();
+  const authorId = session.user.id;
+
+  try {
+    const { slug } = await prisma.blog.findUniqueOrThrow({
+      where: {
+        id,
+        authorId,
+      },
+      select: {
+        slug: true,
+      },
+    });
+    revalidatePath(`/blog/${slug}`);
+  } catch (error) {
+    console.error("User unauthorized from updating post", error);
+    unauthorized();
+  }
+
+  const finalUpdate: Prisma.BlogUpdateInput = {
+    ...update,
+  };
+
+  let imageUrl: string | undefined;
+  if (coverImage) {
+    const dataUrl = await blobToDataURL(coverImage);
+    imageUrl = await uploadBlogPostCoverImage(dataUrl, id);
+    finalUpdate.coverImage = imageUrl;
+  }
+
+  const { slug } = await prisma.blog.update({
+    where: {
+      id,
+      authorId,
+    },
+    data: finalUpdate,
+  });
+
+  revalidatePath("/blog");
+  revalidatePath(`/blog/${slug}`);
+  revalidatePath("/sitemap.xml");
+
+  return {
+    ...(imageUrl ? { imageUrl } : null),
+  };
+}
+
+export async function getBlogPostForEdits(
+  postId: string,
+): Promise<UpdateBlogFormInput> {
   blogPostIdSchema.parse(postId);
   const post = await prisma.blog.findUniqueOrThrow({
     where: {
@@ -120,9 +163,6 @@ export async function getBlogPostForEdits(postId: string) {
   const tags = post.tags as string[] | null;
   return {
     ...post,
-    tags:
-      tags?.map((value) => ({
-        value,
-      })) ?? [],
-  } satisfies BlogFormInput;
+    tags: tags ?? [],
+  };
 }

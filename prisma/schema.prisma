@@ -32,7 +32,6 @@ model User {
   image         String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @default(now()) @updatedAt
-  slug          String?  @unique
 
   sessions Session[]
   accounts Account[]

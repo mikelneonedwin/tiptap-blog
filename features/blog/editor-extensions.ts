@@ -20,11 +20,15 @@ import { TextStyleKit } from "@tiptap/extension-text-style";
 import { Underline } from "@tiptap/extension-underline";
 import Youtube from "@tiptap/extension-youtube";
 import { Placeholder } from "@tiptap/extensions";
+import { Markdown } from "@tiptap/markdown";
 import StarterKit from "@tiptap/starter-kit";
 import { LinkButton } from "./components/editor/link-button";
+import PasteMarkdown from "./plugins";
 
 export const blogEditorExtensions = [
   StarterKit,
+  Markdown,
+  PasteMarkdown,
   Placeholder.configure({
     placeholder: "Let's get started...",
   }),

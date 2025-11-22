@@ -61,6 +61,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRouter } from "nextjs-toploader/app";
 import { useMemo, useState, type ComponentProps } from "react";
+import { useDeleteBlogPostMutation } from "../../mutations";
 import { usersBlogPostOptions } from "../../query-options";
 import type { ListedPost } from "../../types";
 
@@ -97,17 +98,14 @@ function StatusFilterIcon({
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <div
+        <Button
           onClick={onClick}
           data-state={active ? "active" : "inactive"}
-          className={cn(
-            "data-[state=active]:bg-background dark:data-[state=active]:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring dark:data-[state=active]:border-input dark:data-[state=active]:bg-input/30 text-foreground dark:text-muted-foreground inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:shadow-sm [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-            "rounded-none first:rounded-t-md last:rounded-b-md bg-background h-10 w-11 p-0",
-            "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground",
-          )}
+          variant={active ? "default" : "outline"}
+          className="data-[state=active]:bg-background dark:data-[state=active]:text-foreground"
         >
           <Icon className="size-5" />
-        </div>
+        </Button>
       </TooltipTrigger>
       <TooltipContent>
         <p>{label}</p>
@@ -126,10 +124,27 @@ function BlogPostlistSidebar({
   posts: ListedPost[];
 }) {
   const [statusFilter, setStatusFilter] = useState<BlogStatus | "all">("all");
+  const [search, setSearch] = useState("");
   const postsToShow = useMemo(() => {
-    if (statusFilter === "all") return posts;
-    return posts.filter((post) => post.status === statusFilter);
-  }, [posts, statusFilter]);
+    let out = posts;
+
+    if (statusFilter !== "all") {
+      out = out.filter((post) => post.status === statusFilter);
+    }
+
+    if (search) {
+      out = out.filter(
+        (post) =>
+          post.title.toLowerCase().includes(search.toLowerCase()) ||
+          post.description.toLowerCase().includes(search.toLowerCase()),
+      );
+    }
+
+    return out;
+  }, [posts, statusFilter, search]);
+
+  const pathname = usePathname();
+  const deletePostMutation = useDeleteBlogPostMutation();
   return (
     <>
       <Sidebar collapsible="none" className="hidden flex-1 md:flex">
@@ -140,7 +155,7 @@ function BlogPostlistSidebar({
               {activeItem}
             </div>
             {activeItem !== "published" && activeItem !== "drafted" && (
-              <div className="bg-muted text-muted-foreground items-center justify-center rounded-lg grid grid-cols-3 h-auto w-fit p-0 divide-X border shrink-0">
+              <div className="bg-muted text-muted-foreground items-center justify-center rounded-lg grid grid-cols-3 gap-1 h-auto w-fit p-0 divide-X border shrink-0">
                 <StatusFilterIcon
                   active={statusFilter === "all"}
                   icon={Layers}
@@ -163,27 +178,42 @@ function BlogPostlistSidebar({
             )}
           </div>
           {/* TODO INTEGRATE POST SEARCHING */}
-          <SidebarInput placeholder="Type to search..." />
+          <SidebarInput
+            placeholder="Type to search..."
+            onChange={(e) => {
+              setSearch(e.currentTarget.value);
+            }}
+          />
         </SidebarHeader>
         <SidebarContent>
           <SidebarGroup className="px-0">
             <SidebarGroupContent>
-              {postsToShow.map((post) => (
-                <Link
-                  href={`/dashboard/blog/edit/${post.id}`}
-                  key={post.id}
-                  className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground flex flex-col items-start gap-2 border-b p-4 text-sm leading-tight whitespace-nowrap last:border-b-0"
-                >
-                  <div className="flex w-full items-center gap-2">
-                    <span>{post.title}</span> {/* TODO */}
-                    {/*<span className="ml-auto text-xs">Last updated: {post.date}</span>*/}
-                  </div>
-                  <span className="font-medium">{post.category}</span>
-                  <span className="line-clamp-2 w-[260px] text-xs whitespace-break-spaces">
-                    {post.description}
-                  </span>
-                </Link>
-              ))}
+              {postsToShow.map((post) => {
+                const href = `/dashboard/blog/edit/${post.id}`;
+                const active = pathname === href;
+                const isDeleting = post.id === deletePostMutation.variables;
+                return (
+                  <Link
+                    href={active ? "#" : href}
+                    key={post.id}
+                    className={cn(
+                      "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground flex flex-col items-start gap-2.5 border-b p-4 text-sm leading-tight last:border-b-0 w-full",
+                      active &&
+                        "bg-sidebar-accent text-sidebar-accent-foreground",
+                      isDeleting &&
+                        "opacity-50 pointer-events-none bg-red-50 dark:bg-red-950/20",
+                    )}
+                  >
+                    <span className="line-clamp-1">{post.title}</span>
+                    <span className="font-medium capitalize">
+                      {post.category} • {post.status}
+                    </span>
+                    <span className="line-clamp-2 text-xs whitespace-break-spaces">
+                      {post.description}
+                    </span>
+                  </Link>
+                );
+              })}
               {postsToShow.length === 0 && (
                 <Empty>
                   <EmptyHeader>

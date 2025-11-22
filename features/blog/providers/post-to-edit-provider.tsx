@@ -14,16 +14,28 @@ import { useQuery } from "@tanstack/react-query";
 import { AlertTriangle } from "lucide-react";
 import { createContext, useContext, type ReactNode } from "react";
 import { postToUpdateOptions } from "../query-options";
-import type { UpdateBlogInput } from "../schemas";
+import type { BlogFormInput, UpdateBlogFormInput } from "../schemas";
 
-const PostToUpdateContext = createContext<UpdateBlogInput | null>(null);
+const PostToUpdateContext = createContext<UpdateBlogFormInput | null>(null);
 
-export const usePostToUpdate = () => useContext(PostToUpdateContext);
+export const usePostToUpdate = (): Required<BlogFormInput> | null => {
+  const post = useContext(PostToUpdateContext);
+  if (!post) return null;
+  return {
+    ...post,
+    tags:
+      post.tags?.map((value) => ({
+        value,
+      })) ?? [],
+  };
+};
 export const useIsUpdatingPost = () => {
   const postToUpdate = usePostToUpdate();
   return postToUpdate
     ? {
         postId: postToUpdate.id,
+        status: postToUpdate.status,
+        slug: postToUpdate.slug,
       }
     : null;
 };

@@ -3,10 +3,14 @@ import { EditorContent } from "@tiptap/react";
 import { memo, useState } from "react";
 import { Controller } from "react-hook-form";
 import { useBlogForm, useEditor } from "../../providers/editor-provider";
+import { useIsUpdatingPost } from "../../providers/post-to-edit-provider";
 
 const BlogEditor = memo(function BlogEditor() {
   const editor = useEditor();
-  const [hasClearedPlaceholder, setHasClearedPlaceholder] = useState(false);
+  const isUpdatingPost = useIsUpdatingPost();
+  const [hasClearedPlaceholder, setHasClearedPlaceholder] = useState(
+    Boolean(isUpdatingPost),
+  );
   const form = useBlogForm();
   return (
     <Controller
@@ -25,7 +29,7 @@ const BlogEditor = memo(function BlogEditor() {
               element.innerText = "";
               setHasClearedPlaceholder(true);
             }}
-            className="h-full *:focus:border-none *:focus:outline-none"
+            className="h-full *:focus:border-none *:focus:outline-none **:h-auto!"
           />
           {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
         </Field>

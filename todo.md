@@ -17,3 +17,6 @@ Setup needed:
 - Dashboard for editing blog posts
 - Progress bar on blog posts to show you progress through the blog
 - X AI news navbar displaying different categories on blog
+- Enable value.split(",") on tags
+- Handle HR in editor
+- Add share button for posts that have been published

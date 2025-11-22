@@ -1,1 +1,1 @@
-export { default as BlogEditorLayout } from "@/features/blog/pages/editor";
+export { default as default } from "@/features/blog/pages/editor";

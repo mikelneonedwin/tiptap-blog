@@ -36,6 +36,7 @@
   "exclude": [
     "node_modules",
     "features/blog/components/editor/editor-pane.tsx",
-    "features/blog/components/editor/old-blog-editor.tsx"
+    "features/blog/components/editor/old-blog-editor.tsx",
+    "features/blog/components/editor/blog-view.tsx"
   ]
 }

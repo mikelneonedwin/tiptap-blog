@@ -114,7 +114,6 @@ function BlockGroup() {
               variant={isHeading(level) ? "default" : "ghost"}
               // Use the toggleHeading action function
               onClick={() => toggleHeading(level)}
-              className="gap-x-1"
             >
               <Icon className="size-5" />
             </Button>
