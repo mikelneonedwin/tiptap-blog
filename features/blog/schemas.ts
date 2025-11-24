@@ -1,8 +1,12 @@
 import { BlogCategoryEnumArray } from "@/generated/enums";
 import { BlogCreateInputObjectZodSchema } from "@/generated/zod/schemas";
+import {
+  MAX_UPLOAD_FILE_SIZE_BYTES,
+  MAX_UPLOAD_FILE_SIZE_MB,
+} from "@/lib/config";
 import { makeSlug } from "@/lib/utils";
 import z from "zod";
-import { MAX_DESCRIPTION_LENGTH } from "./constants";
+import { MAX_DESCRIPTION_LENGTH, MIN_DESCRIPTION_LENGTH } from "./constants";
 
 const blogPostIdError = "Invalid blog post id";
 export const blogPostIdSchema = z
@@ -47,10 +51,13 @@ export const blogFormSchema = z
     slug: blog.slug.min(1, "Your post needs a slug"),
     // TODO use an input group for this
     description: blog.description
-      .min(1, "Please briefly describe your post")
+      .min(
+        MIN_DESCRIPTION_LENGTH,
+        `Your description is too short. Please give a brief summary of at least ${MIN_DESCRIPTION_LENGTH} characters.`,
+      )
       .max(
         MAX_DESCRIPTION_LENGTH,
-        `Your description should not exceed ${MAX_DESCRIPTION_LENGTH} characters`,
+        `Your description is too long. Please keep it under ${MAX_DESCRIPTION_LENGTH} characters.`,
       ),
     tags: z
       .object({
@@ -71,20 +78,10 @@ export const blogFormSchema = z
           type: blob.type,
         });
         return file;
+      })
+      .refine((file) => file.size <= MAX_UPLOAD_FILE_SIZE_BYTES, {
+        error: `Image must be less than ${MAX_UPLOAD_FILE_SIZE_MB}MB`,
       }),
-    //   .or(
-    //   z
-    //     .instanceof(File)
-    //     .or(z.instanceof(Blob))
-    //     .refine(
-    //       (file) => !sfile || file.size <= MAX_FILE_SIZE_MB,
-    //       `Image must be less than ${MAX_FILE_SIZE_MB}MB`,
-    //     )
-    //     .refine(
-    //       (file) => !file || file.type.startsWith("image/"),
-    //       "Only images are supported",
-    //     ),
-    // ),
   } satisfies Record<
     Exclude<
       keyof typeof BlogCreateInputObjectZodSchema.shape,

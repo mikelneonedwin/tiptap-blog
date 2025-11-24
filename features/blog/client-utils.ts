@@ -1,3 +1,4 @@
+import type { BlogCategory } from "@/generated/prisma";
 import { type BlogFormOutput } from "./schemas";
 import type { CroppedImageArea } from "./types";
 
@@ -89,4 +90,16 @@ export function formatDateToDayMonthDateOrdinalYear(date: Date) {
   };
 
   return `${dayName}, ${monthName} ${ordinal(day)} ${year}`;
+}
+
+export function blogCategoryUrl(category: BlogCategory | "All") {
+  return category === "All" ? "/blog" : `/blog/${category.toLowerCase()}`;
+}
+
+export function getPublicBlogPostUrl(slug: string) {
+  return `/blog/post/${slug}`;
+}
+
+export function getEditBlogPostUrl(postId: string) {
+  return `/dashboard/blog/edit/${postId}`;
 }

@@ -1,4 +1,5 @@
 export const MAX_DESCRIPTION_LENGTH = 160;
+export const MIN_DESCRIPTION_LENGTH = 120;
 export const TEXT_COLOR_PRESETS = [
   { label: "Black", hex: "#1A1A1A" },
   { label: "Gray", hex: "#4B5563" },
@@ -9,3 +10,4 @@ export const TEXT_COLOR_PRESETS = [
   { label: "Orange", hex: "#D97706" },
 ];
 export const DELETE_BLOG_POST_MUTATION_KEY = ["DELETE-BLOG-POST"];
+export const CLOUDINARY_FOLDER_PREFIX = "/blog";

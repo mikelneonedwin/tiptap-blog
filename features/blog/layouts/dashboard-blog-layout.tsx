@@ -1,8 +1,11 @@
+// MOUNT AT dashboard/blog/layout.tsx
+// SHOULD NOT BE WRAPPED IN ANY LAYOUT THAT HAS ITS OWN SIDEBAR
+
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import type { ReactNode } from "react";
-import BlogSidebar from "./blog-sidebar";
+import BlogSidebar from "../components/layout/blog-sidebar";
 
-const BlogDashboardLayout = ({ children }: { children: ReactNode }) => {
+const DashboardBlogLayout = ({ children }: { children: ReactNode }) => {
   return (
     <SidebarProvider
       defaultOpen={false}
@@ -20,4 +23,4 @@ const BlogDashboardLayout = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export default BlogDashboardLayout;
+export default DashboardBlogLayout;

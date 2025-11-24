@@ -6,6 +6,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { getPublicBlogPostUrl } from "@/features/blog/client-utils";
 import { useDeleteBlogPostMutation } from "@/features/blog/mutations";
 import {
   useBlogForm,
@@ -40,7 +41,7 @@ const PostGroup = () => {
   });
   const handleShare = useCallback(async () => {
     const shareUrl = new URL(
-      `/blog/${form.getValues("slug")}`,
+      getPublicBlogPostUrl(form.getValues("slug")),
       window.location.href,
     ).href;
     const title = form.getValues("title");

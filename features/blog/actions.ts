@@ -14,7 +14,12 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { unauthorized } from "next/navigation";
 import { zfd } from "zod-form-data";
-import { blobToDataURL, uploadBlogPostCoverImage } from "./server-utils";
+import { getPublicBlogPostUrl } from "./client-utils";
+import {
+  blobToDataURL,
+  deleteBlogPostCoverImage,
+  uploadBlogPostCoverImage,
+} from "./server-utils";
 
 export async function listUsersBlogPosts() {
   const session = await authorizeSession();
@@ -39,13 +44,16 @@ export async function listUsersBlogPosts() {
 export async function deleteBlogPost(id: string) {
   blogPostIdSchema.parse(id);
   const session = await authorizeSession();
-  await prisma.blog.delete({
+  const { coverImage } = await prisma.blog.delete({
     where: {
       id: id,
       authorId: session.user.id,
     },
-    select: {},
+    select: {
+      coverImage: true,
+    },
   });
+  await deleteBlogPostCoverImage(coverImage);
 }
 
 export async function publishBlogPost(formData: FormData) {
@@ -79,7 +87,7 @@ export async function publishBlogPost(formData: FormData) {
   });
 
   revalidatePath("/blog");
-  revalidatePath(`/blog/${slug}`);
+  revalidatePath(getPublicBlogPostUrl(slug));
   revalidatePath("/sitemap.xml");
   return { id, imageUrl };
 }
@@ -106,7 +114,7 @@ export async function updateBlogPost(formData: FormData) {
         slug: true,
       },
     });
-    revalidatePath(`/blog/${slug}`);
+    revalidatePath(getPublicBlogPostUrl(slug));
   } catch (error) {
     console.error("User unauthorized from updating post", error);
     unauthorized();
@@ -132,7 +140,7 @@ export async function updateBlogPost(formData: FormData) {
   });
 
   revalidatePath("/blog");
-  revalidatePath(`/blog/${slug}`);
+  revalidatePath(getPublicBlogPostUrl(slug));
   revalidatePath("/sitemap.xml");
 
   return {
@@ -164,5 +172,47 @@ export async function getBlogPostForEdits(
   return {
     ...post,
     tags: tags ?? [],
+  };
+}
+
+export async function listPublishedPosts(cursorId?: string) {
+  const take = 12;
+  const posts = await prisma.blog.findMany({
+    where: {
+      status: "published",
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    select: {
+      description: true,
+      title: true,
+      coverImage: true,
+      createdAt: true,
+      slug: true,
+      id: true,
+      category: true,
+      author: {
+        select: {
+          name: true,
+          image: true,
+        },
+      },
+    },
+    take: take + 1,
+    cursor: cursorId ? { id: cursorId } : undefined,
+    skip: cursorId ? 1 : 0, // skip the cursor itself if it exists
+  });
+
+  let nextCursor: string | null = null;
+
+  if (posts.length > take) {
+    const nextItem = posts.pop();
+    nextCursor = nextItem!.id;
+  }
+
+  return {
+    posts,
+    nextCursor,
   };
 }

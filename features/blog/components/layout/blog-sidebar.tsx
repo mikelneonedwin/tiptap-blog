@@ -64,6 +64,7 @@ import { useMemo, useState, type ComponentProps } from "react";
 import { useDeleteBlogPostMutation } from "../../mutations";
 import { usersBlogPostOptions } from "../../query-options";
 import type { ListedPost } from "../../types";
+import { getEditBlogPostUrl } from "../../client-utils";
 
 const categoryIconMap: Record<BlogCategory | BlogStatus, LucideIcon> = {
   Company: Building2,
@@ -189,7 +190,7 @@ function BlogPostlistSidebar({
           <SidebarGroup className="px-0">
             <SidebarGroupContent>
               {postsToShow.map((post) => {
-                const href = `/dashboard/blog/edit/${post.id}`;
+                const href = getEditBlogPostUrl(post.id);
                 const active = pathname === href;
                 const isDeleting = post.id === deletePostMutation.variables;
                 return (

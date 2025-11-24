@@ -20,3 +20,4 @@ Setup needed:
 - Enable value.split(",") on tags
 - Handle HR in editor
 - Add share button for posts that have been published
+- Remove the blog prefix to most blog utilities

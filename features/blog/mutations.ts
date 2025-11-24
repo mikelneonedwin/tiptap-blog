@@ -5,7 +5,10 @@ import { useRouter } from "nextjs-toploader/app";
 import { toast } from "sonner";
 import { zfd } from "zod-form-data";
 import { deleteBlogPost, publishBlogPost, updateBlogPost } from "./actions";
-import { convertBlogOutputToFormData } from "./client-utils";
+import {
+  convertBlogOutputToFormData,
+  getEditBlogPostUrl,
+} from "./client-utils";
 import { DELETE_BLOG_POST_MUTATION_KEY } from "./constants";
 import { usePostToUpdate } from "./providers/post-to-edit-provider";
 import { postToUpdateOptions, usersBlogPostOptions } from "./query-options";
@@ -58,7 +61,7 @@ export const useCreateBlogPostMutation = () => {
         },
         ...(existing ?? []),
       ]);
-      router.replace(`/dashboard/blog/edit/${postId}`);
+      router.replace(getEditBlogPostUrl(postId));
     },
     onError: (error) => {
       console.error("Error creating blog post", error);

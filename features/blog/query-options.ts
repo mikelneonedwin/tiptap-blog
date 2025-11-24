@@ -2,7 +2,8 @@ import {
   getBlogPostForEdits,
   listUsersBlogPosts,
 } from "@/features/blog/actions";
-import { queryOptions } from "@tanstack/react-query";
+import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
+import { listPublishedPosts } from "./actions";
 
 export const usersBlogPostOptions = queryOptions({
   queryKey: ["user-posts"],
@@ -14,3 +15,10 @@ export const postToUpdateOptions = (postId: string) =>
     queryKey: ["post-edit", postId],
     queryFn: () => getBlogPostForEdits(postId),
   });
+
+export const infinitePublishedPostOptions = infiniteQueryOptions({
+  queryKey: ["published-posts"],
+  queryFn: ({ pageParam }) => listPublishedPosts(pageParam),
+  initialPageParam: undefined as string | undefined,
+  getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+});

@@ -14,7 +14,7 @@ const BlogViewer = ({
   isPreview?: boolean;
 }) => {
   return (
-    <div className="relative mx-auto max-w-6xl gap-x-6 px-4 py-10 md:flex md:flex-row md:py-10">
+    <div className="relative mx-auto max-w-6xl gap-x-6 px-4 /py-10 md:flex md:flex-row">
       <article className="mx-auto max-w-3xl pb-20">
         {!isPreview && (
           <Button asChild variant="link">
